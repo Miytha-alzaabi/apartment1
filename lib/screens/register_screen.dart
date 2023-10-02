@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:apartment_app/components/default_radio_button.dart';
 import 'package:apartment_app/components/default_text_field.dart';
 import 'package:apartment_app/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -14,14 +16,15 @@ class RegistrationScreen extends StatefulWidget {
 }
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
-
   var NameController = TextEditingController();
   var IDCardController = TextEditingController();
   var contactController = TextEditingController();
-  var userType ;
+  var userType;
 
   SharedPreferences? prefs;
-  
+
+  File? image;
+  final ImagePicker picker = ImagePicker();
   @override
   void initState() {
     // TODO: implement initState
@@ -29,79 +32,109 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     super.initState();
   }
 
-  _getData() async{
+  _getData() async {
     prefs = await SharedPreferences.getInstance();
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-             Expanded(child: Image.asset("image1.jpeg", width: 300,height: 300,)),
-            Container(
-              alignment: Alignment.center,
-              margin: EdgeInsets.all(20),
-              width: 400,
-              height: 500,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  
-        
-                  DefaultTextField(controller: NameController, lable: "First Name", icon: Icons.person),
-                  DefaultTextField(controller: IDCardController, lable: "ID Card No.", icon: Icons.person),
-                  DefaultTextField(controller: contactController, lable: "Contact Number", icon: Icons.person),
-                  DefaultRadioButton(),
-                  
-                  Container(
-                    
-                    margin: EdgeInsets.all(20),
-                    alignment: Alignment.center,
-                    child: MaterialButton(onPressed: () async{
+        body: Center(
+          child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Stack(
+              children: [
+                Card(
+                  color: Colors.grey.shade300,
+                  margin: EdgeInsets.only(top: 40),
+                  child: SizedBox(
+                    height: MediaQuery.sizeOf(context).height * 0.85,
+                    width: 300,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 45.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          DefaultTextField(
+                              controller: NameController,
+                              lable: "First Name",
+                              icon: Icons.person),
+                          DefaultTextField(
+                              controller: IDCardController,
+                              lable: "ID Card No.",
+                              icon: Icons.person),
+                          DefaultTextField(
+                              controller: contactController,
+                              lable: "Contact Number",
+                              icon: Icons.person),
+                          DefaultRadioButton(),
+                          MaterialButton(
+                            onPressed: () async {
+                              UserModel users = UserModel(
+                                  name: NameController.text,
+                                  id: IDCardController.text,
+                                  contact: contactController.text,
+                                  userType: userType);
 
-                      UserModel users = UserModel(
-                        name: NameController.text,
-                        id: IDCardController.text,
-                        contact: contactController.text,
-                        userType: userType
+                              String data = jsonEncode(users.toMap());
 
-                      );
-
-                      String data = jsonEncode(users.toMap());
-
-                      if(prefs!.containsKey(IDCardController.text)){
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("ID Alredy Exists")));
-                      }
-                      else
-                      {
-                        prefs!.setString(IDCardController.text, data).then((value) => Navigator.pop(context));
-                      }
-
-                    } , child: Text("Reigster", style: TextStyle(color: Colors.black),),
-                    color: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),),
+                              if (prefs!.containsKey(IDCardController.text)) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("ID Alredy Exists")));
+                              } else {
+                                prefs!
+                                    .setString(IDCardController.text, data)
+                                    .then((value) => Navigator.pop(context));
+                              }
+                              //Navigator.pop(context);
+                            },
+                            color: Colors.grey,
+                            child: Text("Create Account"),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-              ],),
+                ),
+                Positioned(
+                    top: .0,
+                    left: .0,
+                    right: .0,
+                    child: Center(
+                      child: image == null
+                          ? InkWell(
+                              child: Container(
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(40),
+                                    color: Colors.blueGrey),
+                                child: Icon(
+                                  Icons.person,
+                                  color: Colors.black,
+                                  size: 40,
+                                ),
+                              ),
+                              onTap: () async {
+                                final XFile? file = await picker.pickImage(
+                                    source: ImageSource.gallery);
+                                image = File(file!.path);
+                              },
+                            )
+                          : CircleAvatar(
+                              radius: 40,
+                              backgroundColor: Colors.blueGrey,
+                              backgroundImage: FileImage(image!),
+                            ),
+                    ))
+              ],
             ),
-
-            
-        
-            
-          ],
+          ),
         ),
+        
       ),
     );
   }
 }
-
-
-

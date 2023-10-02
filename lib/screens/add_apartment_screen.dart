@@ -1,27 +1,15 @@
-import 'package:apartment_app/components/item_card.dart';
 import 'package:apartment_app/components/text_field_form.dart';
-import 'package:apartment_app/models/item_model.dart';
 import 'package:flutter/material.dart';
 
-class ApartmentScreen extends StatefulWidget {
-  ApartmentScreen({
-    super.key,
-    required this.items,
-  });
-  ItemModel items;
-  
+class AddApartmentScreen extends StatelessWidget {
+  const AddApartmentScreen({super.key});
 
-  @override
-  State<ApartmentScreen> createState() => _ApartmentScreenState();
-}
-
-class _ApartmentScreenState extends State<ApartmentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          Image.asset(widget.items.image!),
+          Image.asset("image1.jpeg"),
           Center(
             child: SingleChildScrollView(
               child: SizedBox(
@@ -36,28 +24,28 @@ class _ApartmentScreenState extends State<ApartmentScreen> {
                         height: 10,
                       ),
                       TextFieldForm(
-                          labelText: widget.items.name!,
+                          labelText: "Enter Apartment Name",
                           icon: Icon(Icons.house_rounded)),
                       Row(
                         children: [
                           Flexible(
                               child: TextFieldForm(
-                                  labelText: widget.items.price!,
+                                  labelText: "Enter Price",
                                   icon: Icon(Icons.attach_money_rounded))),
                           Flexible(
                               child: TextFieldForm(
-                                  labelText: widget.items.people!,
+                                  labelText: 'Enter Number of Peiple',
                                   icon: Icon(Icons.person_add_alt_1)))
                         ],
                       ),
                       TextFieldForm(
-                          labelText: widget.items.rooms!,
+                          labelText: "Enter Numbers of Rooms",
                           icon: Icon(Icons.add_home_rounded)),
                       TextFieldForm(
-                          labelText: widget.items.location!,
+                          labelText: "Enter Location",
                           icon: Icon(Icons.location_on)),
                           TextFieldForm(
-                          labelText: "Services",
+                          labelText: "Select Services",
                           icon: Icon(Icons.location_on)),
                            MaterialButton(
                           onPressed: (){
@@ -66,7 +54,7 @@ class _ApartmentScreenState extends State<ApartmentScreen> {
                           color: Colors.black,
                           shape: ContinuousRectangleBorder(
                             borderRadius: BorderRadius.circular(50)),
-                          child: const Text("Save",style: TextStyle(
+                          child: const Text("Add",style: TextStyle(
                             color: Colors.white
                           ),),
                         )
@@ -79,14 +67,6 @@ class _ApartmentScreenState extends State<ApartmentScreen> {
         ],
       ),
 
-      //         MaterialButton(onPressed: (){
-      //           for (var element in widget.properties) {
-
-      //             widget.properties.add(element);
-      //             print(element);
-
-      //           }
-      //         }, child: Text("ADD"),)
 
     );
   }
